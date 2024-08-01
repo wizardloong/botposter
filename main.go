@@ -135,7 +135,7 @@ func sendToAI(content string) (string, error) {
 	requestBody, err := json.Marshal(map[string]interface{}{
 		"model": "gpt-3.5-turbo",
 		"messages": []map[string]string{
-			{"role": "user", "content": fmt.Sprintf("Перепиши этот текст, сократив его до 500 символов или меньше: %s", content)},
+			{"role": "user", "content": fmt.Sprintf("Перепиши этот текст, сократив его до %s символов или меньше: %s", os.Getenv("POST_LEN"), content)},
 		},
 	})
 	if err != nil {
