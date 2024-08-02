@@ -13,6 +13,9 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/joho/godotenv"
+	"github.com/wizardloong/botposter/pkg/handler"
+	"github.com/wizardloong/botposter/pkg/service"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
@@ -25,8 +28,15 @@ type GPTResponse struct {
 }
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		log.Fatalf("error loading env variables: %s", err.Error())
+	}
+
 	telegramToken := os.Getenv("BOT_TOKEN")
 	channelID := os.Getenv("CHANNEL_ID") // Убедитесь, что это значение является числовым ID канала
+
+	log.Println(telegramToken)
+	log.Println(channelID)
 
 	b, err := tb.NewBot(tb.Settings{
 		Token:  telegramToken,
@@ -37,9 +47,8 @@ func main() {
 		return
 	}
 
-	b.Handle("/start", func(m *tb.Message) {
-		b.Send(m.Sender, "Привет! Отправь мне ссылку на статью с сайта Shazoo.ru.")
-	})
+	services := service.NewServices()
+	handler.NewHandler(services, b)
 
 	b.Handle(tb.OnText, func(m *tb.Message) {
 		url := m.Text
@@ -65,11 +74,18 @@ func main() {
 			}
 
 			// Формирование поста для Телеграма
-			post := fmt.Sprintf("👾 <b>%s</b>\n<i>%s</i>\n--------\n%s", title, rewrittenText, "Добавьте несколько слов от себя:")
+			post := fmt.Sprintf("👾 <b>%s</b>\n<i>%s</i>\n", title, rewrittenText)
 			b.Send(m.Sender, post, &tb.SendOptions{ParseMode: tb.ModeHTML})
+			b.Send(m.Sender, "Добавьте несколько слов от себя.", &tb.SendOptions{ParseMode: tb.ModeHTML})
 
 			b.Handle(tb.OnText, func(m *tb.Message) {
-				finalPost := post + "\n" + m.Text
+				var finalPost string
+				if len(m.Text) != 0 {
+					finalPost = post + "\n--------\n" + m.Text
+				} else {
+					finalPost = post
+				}
+
 				b.Send(m.Sender, "Вот итоговый пост:\n"+finalPost, &tb.SendOptions{ParseMode: tb.ModeHTML})
 
 				publishButton := tb.InlineButton{
