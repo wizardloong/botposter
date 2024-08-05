@@ -17,6 +17,9 @@ func NewHandler(services *service.Service, bot *tb.Bot) *Handler {
 	}
 }
 
-func (h *Handler) InitRoutes() {
+func (h *Handler) RunBot() {
 	h.bot.Handle("/start", h.hello)
+	h.bot.Handle(tb.OnText, h.article)
+
+	h.bot.Start()
 }
