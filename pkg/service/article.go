@@ -36,7 +36,7 @@ func (s *Service) RewriteArticle(url string) (string, []byte, error) {
 		return "", nil, errors.New("cannot download image")
 	}
 	// Формирование поста для Телеграма
-	post := fmt.Sprintf("👾 <b>%s</b>\n<i>%s</i>\n", title, rewrittenText)
+	post := fmt.Sprintf("👾 <b>%s</b>\n\n<i>%s</i>\n", title, rewrittenText)
 
 	return post, image, nil
 }
