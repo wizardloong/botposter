@@ -52,9 +52,6 @@ func (ai *Theb) Completion(content string) (string, error) {
 		return "", err
 	}
 
-	// TODO. Check Debug
-	fmt.Println("Response Body:", string(body))
-
 	var gptResponse GPTResponse
 	if err := json.NewDecoder(bytes.NewBuffer(body)).Decode(&gptResponse); err != nil {
 		return "", err

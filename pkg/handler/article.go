@@ -2,7 +2,6 @@ package handler
 
 import (
 	"bytes"
-	"fmt"
 	"os"
 	"strconv"
 
@@ -70,8 +69,6 @@ func (h *Handler) preview(sender *tb.User, image []byte, post string) {
 		File:    tb.FromReader(bytes.NewReader(image)),
 		Caption: post,
 	}
-
-	fmt.Println(image)
 
 	h.bot.Send(sender, photo, &tb.SendOptions{ParseMode: tb.ModeHTML})
 }
