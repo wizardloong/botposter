@@ -7,6 +7,8 @@ import (
 	"io"
 	"net/http"
 	"os"
+
+	"github.com/spf13/viper"
 )
 
 type Theb struct {
@@ -20,11 +22,15 @@ type GPTResponse struct {
 	} `json:"choices"`
 }
 
+const (
+	completionUrl = "https://api.theb.ai/v1/chat/completions"
+)
+
 func (ai *Theb) Completion(content string) (string, error) {
 	thebAiAPIKey := os.Getenv("THEB_API_KEY")
 
 	requestBody, err := json.Marshal(map[string]interface{}{
-		"model": "gpt-3.5-turbo",
+		"model": viper.GetString("ai.theb.model"),
 		"messages": []map[string]string{
 			{"role": "user", "content": content},
 		},
@@ -33,7 +39,7 @@ func (ai *Theb) Completion(content string) (string, error) {
 		return "", err
 	}
 
-	req, err := http.NewRequest("POST", "https://api.theb.ai/v1/chat/completions", bytes.NewBuffer(requestBody))
+	req, err := http.NewRequest("POST", completionUrl, bytes.NewBuffer(requestBody))
 	if err != nil {
 		return "", err
 	}

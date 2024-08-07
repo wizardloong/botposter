@@ -30,7 +30,7 @@ func (h *Handler) article(m *tb.Message) {
 
 	h.bot.Handle(&choiceYes, func(c *tb.Callback) {
 		h.bot.Handle(tb.OnText, func(m *tb.Message) {
-			post = post + "\n\n" + m.Text
+			post = post + "\n" + m.Text
 			h.prepareAndPublish(c.Sender, post, image)
 		})
 	})
